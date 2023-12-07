@@ -23,9 +23,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SqlServer2'"
 		},
-		"default_properties_env_value": {
+		"linkedService1_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService1'"
+		},
+		"default_properties_Schema_Name_gbl_value": {
 			"type": "string",
-			"defaultValue": "DEV"
+			"defaultValue": "dbo"
+		},
+		"default_properties_DataBase_Name_value": {
+			"type": "string",
+			"defaultValue": "Dev"
 		},
 		"containerUri": {
 			"type": "string",
@@ -66,12 +74,38 @@
 					"SqlServer1_connectionString": {
 						"value": "[parameters('SqlServer1_connectionString')]"
 					},
-					"default_properties_env_value": {
-						"value": "[parameters('default_properties_env_value')]"
+					"linkedService1_connectionString": {
+						"value": "[parameters('linkedService1_connectionString')]"
+					},
+					"default_properties_Schema_Name_gbl_value": {
+						"value": "[parameters('default_properties_Schema_Name_gbl_value')]"
+					},
+					"default_properties_DataBase_Name_value": {
+						"value": "[parameters('default_properties_DataBase_Name_value')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "training05_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'training05_ArmTemplate_0')]"
+			]
 		}
 	]
 }

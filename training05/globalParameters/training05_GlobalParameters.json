@@ -1,6 +1,10 @@
 {
-	"env": {
+	"Schema_Name_gbl": {
 		"type": "string",
-		"value": "DEV"
+		"value": "dbo"
+	},
+	"DataBase_Name": {
+		"type": "string",
+		"value": "Dev"
 	}
 }

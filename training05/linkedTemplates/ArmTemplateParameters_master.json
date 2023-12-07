@@ -17,8 +17,14 @@
 		"SqlServer2_connectionString": {
 			"value": ""
 		},
-		"default_properties_env_value": {
-			"value": "DEV"
+		"linkedService1_connectionString": {
+			"value": ""
+		},
+		"default_properties_Schema_Name_gbl_value": {
+			"value": "dbo"
+		},
+		"default_properties_DataBase_Name_value": {
+			"value": "Dev"
 		},
 		"containerUri": {
 			"value": ""
