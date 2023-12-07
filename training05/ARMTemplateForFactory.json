@@ -709,7 +709,7 @@
 							"source": {
 								"type": "SqlServerSource",
 								"sqlReaderQuery": {
-									"value": "@concat('SELECT * FROM ',pipeline().globalParameters.Schema_Name_gbl,'.',pipeline().parameters.Table_Name)",
+									"value": "SELECT * FROM @{pipeline().globalParameters.Schema_Name_gbl}.@{pipeline().parameters.Table_Name}",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -732,7 +732,8 @@
 										"type": "Expression"
 									}
 								}
-							}
+							},
+							"firstRowOnly": false
 						}
 					}
 				],
@@ -740,9 +741,6 @@
 					"elapsedTimeMetric": {}
 				},
 				"parameters": {
-					"Schema_Name": {
-						"type": "string"
-					},
 					"Table_Name": {
 						"type": "string"
 					}
@@ -1048,7 +1046,7 @@
 							"source": {
 								"type": "SqlServerSource",
 								"sqlReaderQuery": {
-									"value": "@concat('SELECT * FROM ',pipeline().globalParameters.Schema_Name_gbl,'.',pipeline().parameters.Table_Name)",
+									"value": "@concat('select * from ', pipeline().globalParameters.Schema_Name_gbl, '.', pipeline().parameters.Table_Name)",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
@@ -1362,117 +1360,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/For_each_set_var')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Lookup1",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderQuery": {
-									"value": "@concat('SELECT * FROM ',pipeline().globalParameters.Schema_Name_gbl,'.',pipeline().parameters.Table_Name)",
-									"type": "Expression"
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "SqlServerTable1",
-								"type": "DatasetReference",
-								"parameters": {
-									"Schema_name": {
-										"value": "@pipeline().globalParameters.Schema_Name_gbl",
-										"type": "Expression"
-									},
-									"Table_Name": {
-										"value": "@pipeline().parameters.Table_Name",
-										"type": "Expression"
-									},
-									"Database__Name": {
-										"value": "@pipeline().globalParameters.DataBase_Name",
-										"type": "Expression"
-									}
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Lookup1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Lookup1').output.value",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "Set variable1",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "TableName_Var",
-										"value": {
-											"value": "@item().Table_name",
-											"type": "Expression"
-										}
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"Table_Name": {
-						"type": "string"
-					}
-				},
-				"variables": {
-					"TableName_Var": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "Day6"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/SqlServerTable1')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/For_each_copy')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1556,6 +1443,30 @@
 											"type": "Expression"
 										}
 									}
+								},
+								{
+									"name": "Set variable1_copy1",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set variable1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "status_VAr",
+										"value": {
+											"value": "@item().status",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
@@ -1571,6 +1482,9 @@
 				},
 				"variables": {
 					"TableName_Var": {
+						"type": "String"
+					},
+					"status_VAr": {
 						"type": "String"
 					}
 				},
